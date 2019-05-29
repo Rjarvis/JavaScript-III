@@ -16,12 +16,33 @@
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
 
+function GameObject(attributes){
+  this.createdAt = attributes.createdAt;
+  this.name = attributes.name;
+  this.dimensions = attributes.dimensions;
+  this.destroy = function(){
+    return `${this.name} was removed from the game.`;
+  }; 
+}
 /*
   === CharacterStats ===
   * healthPoints
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+function CharacterStats(charAttributes){
+  GameObject.call(this, charAttributes);
+  this.healthPoints = charAttributes.healthPoints;
+  this.dimensions = charAttributes.dimensions;
+  this.takeDamage = function(){
+    return `${this.name} took damage.`;
+  };
+}
+
+/*
+CharacterStats.prototype.takeDamage = function(){
+  return `${this.name} took damage.`;
+};*/
 
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
@@ -32,7 +53,56 @@
   * should inherit destroy() from GameObject through CharacterStats
   * should inherit takeDamage() from CharacterStats
 */
- 
+
+function Humanoid(humanAttributes){
+  CharacterStats.call(this, humanAttributes);
+  this.team = humanAttributes.team;
+  this.weapons = humanAttributes.weapons;
+  this.language = humanAttributes.language;
+}
+
+Humanoid.prototype.greet = function(){
+  return `${this.name} offers a greeting in ${this.language}.`;
+};
+
+/*
+  === Hero / Villian constructor ===
+  * inherits from Humanoid constructor.
+  * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
+  * Create two new objects, one a villain and one a hero and fight it out with methods!
+*/
+
+function Hero(heroAttributes){
+  Humanoid.call(this, heroAttributes);
+  this.alliegiance = heroAttributes.alliegiance;
+  this.attackVillian = function(target){
+    if(target.alliegiance === 'villian' && this.weapons != null){
+      target.healthPoints = target.healthPoints-3;
+      if(target.healthPoints <= 0){
+        return target.destroy();
+      }else{
+        return `${target.name} took 3 points of damage leaving them at ${target.healthPoints}`;
+      }
+    }else{
+      return `Hero's only hurt villians!`
+    }
+
+  };
+}
+
+function Villain(villianAttributes){
+  Humanoid.call(this, villianAttributes);
+  this.alliegiance = villianAttributes.alliegiance;
+  this.attack = function(target){
+    if(target.alliegiance === null || target.team != 'Citadel'){
+      target.healthPoints = target.healthPoints - 10;
+      return `${target.name} took 10 points of damage; leaving them at ${target.healthPoints}`;
+    }else{
+      target.healthPoints = target.healthPoints--;
+      return `${target.name} took 1 point of damage; leaving them at ${target.healthPoints}`;
+    }
+  };
+}
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
   * Instances of Humanoid should have all of the same properties as CharacterStats and GameObject.
@@ -41,7 +111,7 @@
 
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -92,6 +162,41 @@
     language: 'Elvish',
   });
 
+  const paladin = new Hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 2,
+      width: 2,
+      height: 3,
+    },
+    healthPoints: 15,
+    name: 'Kyle',
+    team: 'Citadel',
+    weapons: [
+      'Sword',
+      'Sheild',
+    ],
+    language: 'common',
+    alliegiance: 'hero',
+  });
+
+  const warlock = new Villain({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 1,
+      height: 2,
+    },
+    healthPoints: 9,
+    name: 'Raheem',
+    team: 'Catacombs',
+    weapons: [
+      'Dagger',
+    ],
+    language: 'infernal',
+    alliegiance: 'villian',                                  
+  });
+
   console.log(mage.createdAt); // Today's date
   console.log(archer.dimensions); // { length: 1, width: 2, height: 4 }
   console.log(swordsman.healthPoints); // 15
@@ -102,8 +207,14 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
-
+  console.log(warlock.attack(archer));
+  console.log(warlock.attack(paladin));
+  console.log(paladin.attackVillian(warlock));// Raheem took 3 points of damage leaving them at 6
+  console.log(paladin.attackVillian(warlock));
+  console.log(paladin.attackVillian(warlock));
+  console.log(paladin.attackVillian(warlock));
+  console.log(paladin.attackVillian(warlock));
+  console.log(paladin.attackVillian(archer));
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
