@@ -15,7 +15,7 @@
   * dimensions (These represent the character's size in the video game)
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
-
+/*
 function GameObject(attributes){
   this.createdAt = attributes.createdAt;
   this.name = attributes.name;
@@ -24,12 +24,26 @@ function GameObject(attributes){
     return `${this.name} was removed from the game.`;
   }; 
 }
+*/
+class GameObject{
+  constructor(attributes){
+    this.createdAt = attributes.createdAt;
+    this.name = attributes.name;
+    this.dimensions = attributes.dimensions;
+  }
+
+  destroy() {
+    return `${this.name} was removed from the game!`;
+  }
+
+}
 /*
   === CharacterStats ===
   * healthPoints
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+/*
 function CharacterStats(charAttributes){
   GameObject.call(this, charAttributes);
   this.healthPoints = charAttributes.healthPoints;
@@ -38,7 +52,18 @@ function CharacterStats(charAttributes){
     return `${this.name} took damage.`;
   };
 }
+*/
+class CharacterStats extends GameObject{
+  constructor(charAttributes){
+    super(charAttributes);
+    this.healthPoints = charAttributes.healthPoints;
+    this.dimensions = charAttributes.dimensions;
+  }
 
+  takeDamage(){
+    return `${this.name} took damage.`;
+  }
+}
 /*
 CharacterStats.prototype.takeDamage = function(){
   return `${this.name} took damage.`;
@@ -54,6 +79,7 @@ CharacterStats.prototype.takeDamage = function(){
   * should inherit takeDamage() from CharacterStats
 */
 
+/*
 function Humanoid(humanAttributes){
   CharacterStats.call(this, humanAttributes);
   this.team = humanAttributes.team;
@@ -64,14 +90,29 @@ function Humanoid(humanAttributes){
 Humanoid.prototype.greet = function(){
   return `${this.name} offers a greeting in ${this.language}.`;
 };
+*/
 
+
+class Humanoid extends CharacterStats{
+  constructor(humanAttributes){
+    super(humanAttributes);
+    this.team = humanAttributes.team;
+    this.weapons = humanAttributes.weapons;
+    this.language = humanAttributes.language;
+  }
+
+  greet(){
+    return `${this.name} offers a greeting in ${this.language}.`;
+  }
+}
 /*
   === Hero / Villian constructor ===
   * inherits from Humanoid constructor.
   * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   * Create two new objects, one a villain and one a hero and fight it out with methods!
-*/
-
+  */
+ 
+ /*
 function Hero(heroAttributes){
   Humanoid.call(this, heroAttributes);
   this.alliegiance = heroAttributes.alliegiance;
@@ -84,12 +125,33 @@ function Hero(heroAttributes){
         return `${target.name} took 3 points of damage leaving them at ${target.healthPoints}`;
       }
     }else{
-      return `Hero's only hurt villians!`
+      return `Hero's only hurt villians!`;
     }
 
   };
 }
+ */
+class Hero extends Humanoid{
+  constructor(heroAttributes){
+    super(heroAttributes);
+    this.alliegiance = heroAttributes.alliegiance;
+  }
 
+  attackVillian(target){
+    if(target.alliegiance === 'villian' && this.weapons != null){
+      target.healthPoints = target.healthPoints-3;
+      if(target.healthPoints <= 0){
+        return target.destroy();
+      }else{
+        return `${target.name} took 3 points of damage leaving them at ${target.healthPoints}`;
+      }
+    }else{
+      return `Hero's only hurt villians!`;
+    }
+  }
+}
+
+/*
 function Villain(villianAttributes){
   Humanoid.call(this, villianAttributes);
   this.alliegiance = villianAttributes.alliegiance;
@@ -102,6 +164,28 @@ function Villain(villianAttributes){
       return `${target.name} took 1 point of damage; leaving them at ${target.healthPoints}`;
     }
   };
+}
+ */
+
+ class Villain extends Humanoid{
+  constructor(villianAttributes){
+    super(villianAttributes);
+    this.alliegiance = villianAttributes.alliegiance;
+  }
+
+  attack(target){
+    if(target.alliegiance === null || target.team != 'Citadel'){
+      target.healthPoints = target.healthPoints - 10;
+      if(target.healthPoints <= 0){
+        return target.destroy();
+      }else{
+        return `${target.name} took 10 points of damage; leaving them at ${target.healthPoints}`;
+      }
+    }else{
+      target.healthPoints = target.healthPoints--;
+      return `${target.name} took 1 point of damage; leaving them at ${target.healthPoints}`;
+    }
+  }
 }
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
